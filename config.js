@@ -1,7 +1,7 @@
 module.exports = {
     app: {
         px: '+', // Le prefix exemple +help *help ta capter le prefix avant la commande...
-        owners: ['960593732862902312', '345208352038584320'], // Ici tu te met owner (Que toi pas tes meilleurs collègue...)
+        owners: ['960593732862902312', '345208352038584320', '705403970771746828'], // Ici tu te met owner (Que toi pas tes meilleurs collègue...)
         funny: ['960593732862902312', '345208352038584320'],  // Ici tu te met owner (Que toi pas tes meilleurs collègue...)
         logChannelId: '1296627818016542753',
         logChannelIdReboot: '1299181553074704434',
