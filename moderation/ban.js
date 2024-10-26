@@ -11,14 +11,11 @@ module.exports = {
     usage: 'ban <membre>',
     description: `Permet de bannir un membre.`,
     async execute(client, message, args) {
-        // Récupération de la couleur du serveur, avec fallback à une couleur par défaut
         let color = cl.fetch(`color_${message.guild.id}`) || config.app.color;
-        
-        // ID du channel pour les logs de bannissement
-        const logChannelIdBan = "ID_DU_CHANNEL_DE_LOGS_BAN"; // Remplacez par l'ID du channel de logs de ban
+
+        const logChannelIdBan = "1299795446562295869"; // Remplacez par l'ID du channel de logs de ban
         const logChannel = client.channels.cache.get(logChannelIdBan);
 
-        // Vérification des permissions de l'auteur du message
         const isOwner = owner.get(`owners.${message.author.id}`) || 
                         config.app.owners.includes(message.author.id) || 
                         config.app.funny.includes(message.author.id);
@@ -27,64 +24,54 @@ module.exports = {
             return message.reply("Vous n'avez pas la permission de bannir des membres.");
         }
 
-        // Récupération de l'utilisateur à bannir
         let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
         if (!member) {
             try {
                 member = await client.users.fetch(args[0]);
             } catch (e) {
-                return message.reply("Merci de mentionner un utilisateur valide ou de fournir un ID valide !");
+                return message.reply("Utilisateur introuvable. Assurez-vous de mentionner un utilisateur ou d'utiliser un ID valide.");
             }
         }
 
-        // Interdiction de bannir soi-même
         if (member.id === message.author.id) {
             return message.reply("Tu ne peux pas te bannir !");
         }
 
-        // Vérification des permissions de hiérarchie pour éviter le ban d'un membre ayant des permissions supérieures
         if (member.roles && member.roles.highest.position >= message.member.roles.highest.position) {
             return message.reply("Vous ne pouvez pas bannir un membre ayant un rôle supérieur ou égal au vôtre.");
         }
 
-        // Récupération de la raison du ban
         const reason = args.slice(1).join(" ") || "Aucune raison spécifiée";
 
-        // Envoi d'un message au membre banni (silencieux en cas d'échec)
-        member.send({ content: `Vous avez été banni par ${message.author} pour la raison suivante: \n\n ${reason}` })
-            .catch(() => null);
-
-        // Bannissement de l'utilisateur
         try {
             await member.ban({ reason });
             message.reply({ content: `${member} a été banni du serveur.` });
+
+            const joinDate = member.joinedAt ? moment(member.joinedAt).format('DD/MM/YYYY') : "Inconnu";
+            const accountCreationDate = moment(member.user.createdAt).format('DD/MM/YYYY');
+            const roles = member.roles ? member.roles.cache.map(role => role.name).join(", ") : "Aucun rôle";
+
+            const banEmbed = new Discord.MessageEmbed()
+                .setColor(color)
+                .setTitle("Utilisateur banni")
+                .setDescription(`<@${message.author.id}> a \`banni\` ${member} du serveur`)
+                .addFields(
+                    { name: "ID de l'utilisateur", value: member.id, inline: true },
+                    { name: "Date de création du compte", value: accountCreationDate, inline: true },
+                    { name: "Date d'arrivée sur le serveur", value: joinDate, inline: true },
+                    { name: "Raison", value: reason },
+                    { name: "Rôles précédents", value: roles }
+                )
+                .setTimestamp()
+                .setFooter({ text: `📚` });
+
+            if (logChannel) logChannel.send({ embeds: [banEmbed] }).catch(console.error);
+            const modlogChannel = client.channels.cache.get(ml.get(`${message.guild.id}.modlog`));
+            if (modlogChannel) modlogChannel.send({ embeds: [banEmbed] }).catch(console.error);
+
         } catch (error) {
-            return message.reply("Une erreur s'est produite lors du bannissement de cet utilisateur.");
+            console.error("Erreur lors du bannissement :", error); // Journalisation de l'erreur dans la console
+            message.reply("Une erreur s'est produite lors du bannissement de cet utilisateur. Assurez-vous que le bot possède les permissions nécessaires.");
         }
-
-        // Récupération des informations de l'utilisateur
-        const joinDate = member.joinedAt ? moment(member.joinedAt).format('DD/MM/YYYY') : "Inconnu";
-        const accountCreationDate = moment(member.user.createdAt).format('DD/MM/YYYY');
-        const roles = member.roles.cache.map(role => role.name).join(", ") || "Aucun rôle";
-
-        // Création de l'embed de logs
-        const banEmbed = new Discord.MessageEmbed()
-            .setColor(color)
-            .setTitle("Utilisateur banni")
-            .setDescription(`<@${message.author.id}> a \`banni\` ${member} du serveur`)
-            .addFields(
-                { name: "ID de l'utilisateur", value: member.id, inline: true },
-                { name: "Date de création du compte", value: accountCreationDate, inline: true },
-                { name: "Date d'arrivée sur le serveur", value: joinDate, inline: true },
-                { name: "Raison", value: reason },
-                { name: "Rôles précédents", value: roles }
-            )
-            .setTimestamp()
-            .setFooter({ text: `📚` });
-
-        // Envoi de l'embed de logs dans le channel de logs et dans le modlog, si définis
-        if (logChannel) logChannel.send({ embeds: [banEmbed] }).catch(() => false);
-        const modlogChannel = client.channels.cache.get(ml.get(`${message.guild.id}.modlog`));
-        if (modlogChannel) modlogChannel.send({ embeds: [banEmbed] }).catch(() => false);
     }
 };
