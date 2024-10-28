@@ -5,7 +5,6 @@ const { readdirSync } = require("fs");
 const db = require('quick.db');
 const { Player } = require('discord-player');
 const ms = require("ms");
-
 const client = new Client({
     intents: [
         Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_BANS, 
@@ -39,7 +38,7 @@ client.on('ready', () => {
     console.log(`Le bot est prêt, connecté en tant que ${client.user.tag}`);
 });
 
-// Gestion de la commande reboot (avec la même logique de vérification des logs)
+// Commande pour reboot
 client.on('messageCreate', async (message) => {
     if (message.content === '+reboot' && config.app.owners.includes(message.author.id)) {
         const logChannel = client.channels.cache.get(config.app.logChannelIdReboot);
@@ -75,6 +74,28 @@ client.on('messageCreate', async (message) => {
     }
 });
 
+// Commande pour mettre à jour le bot via GitHub
+client.on('messageCreate', async (message) => {
+    if (message.content === '+update' && config.app.owners.includes(message.author.id)) {
+        const logChannel = client.channels.cache.get(config.app.logChannelIdReboot);
+
+        if (!logChannel) {
+            console.error("Erreur : le canal de logs est introuvable.");
+            return;
+        }
+
+        if (!logChannel.permissionsFor(client.user).has('SEND_MESSAGES')) {
+            console.error("Erreur : le bot n'a pas la permission d'envoyer des messages dans le canal de logs.");
+            return;
+        }
+
+        // Envoyer un message indiquant qu'un déploiement est attendu
+        await logChannel.send("🔄 Mise à jour du bot en cours via GitHub. Render va redéployer le bot.");
+        
+        // Facultatif : Ajouter des informations sur le déploiement GitHub
+        console.log("Pousse les modifications sur GitHub pour déclencher le redéploiement.");
+    }
+});
 
 // Gestionnaire de commandes et événements (comme avant)
 const commandFolders = ['moderation', 'botcontrol', 'gestion', 'utilities', 'logs', 'antiraid'];
