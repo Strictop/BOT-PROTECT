@@ -13,7 +13,7 @@ module.exports = {
     description: `Permet de bannir un membre.`,
     async execute(client, message, args) {
         let color = cl.fetch(`color_${message.guild.id}`) || config.app.color;
-        const logChannelIdBan = "1300520482398797946"; // Remplacez par l'ID du channel de logs de ban
+        const logChannelIdBan = "1301377565335748698"; // Remplacez par l'ID du channel de logs de ban
         const logChannel = client.channels.cache.get(logChannelIdBan);
         const botLogo = client.user.displayAvatarURL(); // Logo du bot
         const botName = client.user.username; // Nom du bot
