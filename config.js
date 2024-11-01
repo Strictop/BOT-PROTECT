@@ -6,7 +6,7 @@ module.exports = {
         logChannelId: '1296627818016542753',
         logChannelIdReboot: '1299181553074704434',
         logChannelIdBan: '1299795446562295869',
-        color: '#6495ED', // Couleur en HEX | https://htmlcolorcodes.com/fr/selecteur-de-couleur/
+        color: '#F700FF', // Couleur en HEX | https://htmlcolorcodes.com/fr/selecteur-de-couleur/
         footer: 'Strictop-Protect', // Quand tu fais +help par exemple y'a un texte en bas de l'embed...
         maxserver: '100', // Maximum de serveur ou ton bot peut etre dedans...
         hostedBy: true, // Touche pas 
