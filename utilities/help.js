@@ -412,7 +412,7 @@ Empeche l'accès à un salon vocal sauf pour les membres vl/wl/owner.
 **\`${pf}vl/unvl <membre>\`**
 Les membres vocal whitelist seront autorisés à rejoindre les vocaux interdit.
                 
-**\`${pf}blv/unblv/ <membre>\`**
+**\`${pf}blv/unblv (+unblv ne fonctionne pas... Certain en on fait les frais :/)/ <membre>\`**
 Blacklist vocal un membre du serveur, il ne pourra rejoindre aucun salon vocal.
 
           `)
@@ -519,8 +519,8 @@ Permet d'accèder au menu des roles temporaire.
 **\`${pf}kick <membre> [raison]\`**
 Expulse un membre du serveur.
 
-**\`${pf}ban <membre> [raison]\`**
-Ban un membre du serveur.
+**\`${pf}ban <membre/ID> [raison]\`**
+Ban un membre du serveur et lui envoie un mp disant qu'il est banni et la raison de son ban.
 
 **\`${pf}mute <membre> [durée]\`**
 Rendre muet un membre. (maximum 27j)
