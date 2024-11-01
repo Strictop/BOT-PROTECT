@@ -1,10 +1,12 @@
 const { Client, Intents, Collection } = require('discord.js');
+const axios = require('axios');
 const config = require('./config');
 const httpport = require('./oport.js');
 const { readdirSync } = require("fs");
 const db = require('quick.db');
 const { Player } = require('discord-player');
 const ms = require("ms");
+
 const client = new Client({
     intents: [
         Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_BANS, 
@@ -38,7 +40,7 @@ client.on('ready', () => {
     console.log(`Le bot est prêt, connecté en tant que ${client.user.tag}`);
 });
 
-// Commande pour reboot
+// Commande pour déclencher le redéploiement via le webhook Render
 client.on('messageCreate', async (message) => {
     if (message.content === '+reboot' && config.app.owners.includes(message.author.id)) {
         const logChannel = client.channels.cache.get(config.app.logChannelIdReboot);
@@ -54,46 +56,22 @@ client.on('messageCreate', async (message) => {
         }
 
         // Envoie un message indiquant que le bot va redémarrer
-        await logChannel.send(`🔴 Le bot va redémarrer...`);
+        await logChannel.send(`🔴 Le bot va redémarrer via le webhook Render...`);
 
-        // Déconnecte le bot
-        console.log("Déconnexion du bot en cours...");
-        await client.destroy();
-
-        // Reconnexion après 5 secondes
-        setTimeout(async () => {
-            try {
-                console.log("Tentative de reconnexion...");
-                await client.login(process.env.TOKEN);
-                console.log("🔄 Reconnexion réussie.");
-                await logChannel.send("🟢 Le bot a redémarré avec succès.");
-            } catch (error) {
-                console.error("Erreur lors de la tentative de reconnexion :", error);
+        // Appel du webhook de déploiement de Render
+        try {
+            const response = await axios.post(process.env.RENDER_DEPLOY_WEBHOOK);
+            if (response.status === 200) {
+                console.log("Webhook de déploiement exécuté avec succès.");
+                await logChannel.send("🟢 Le déploiement du bot a été déclenché avec succès via Render.");
+            } else {
+                console.error("Erreur lors de l'exécution du webhook de déploiement :", response.statusText);
+                await logChannel.send("❌ Échec du déclenchement du déploiement via Render.");
             }
-        }, 5000); // Délai de 5 secondes avant la reconnexion
-    }
-});
-
-// Commande pour mettre à jour le bot via GitHub
-client.on('messageCreate', async (message) => {
-    if (message.content === '+update' && config.app.owners.includes(message.author.id)) {
-        const logChannel = client.channels.cache.get(config.app.logChannelIdReboot);
-
-        if (!logChannel) {
-            console.error("Erreur : le canal de logs est introuvable.");
-            return;
+        } catch (error) {
+            console.error("Erreur lors de la requête webhook :", error);
+            await logChannel.send("❌ Échec de la requête pour déclencher le déploiement.");
         }
-
-        if (!logChannel.permissionsFor(client.user).has('SEND_MESSAGES')) {
-            console.error("Erreur : le bot n'a pas la permission d'envoyer des messages dans le canal de logs.");
-            return;
-        }
-
-        // Envoyer un message indiquant qu'un déploiement est attendu
-        await logChannel.send("🔄 Mise à jour du bot en cours via GitHub. Render va redéployer le bot.");
-        
-        // Facultatif : Ajouter des informations sur le déploiement GitHub
-        console.log("Pousse les modifications sur GitHub pour déclencher le redéploiement.");
     }
 });
 
