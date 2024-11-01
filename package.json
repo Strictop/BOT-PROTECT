@@ -6,6 +6,9 @@
   "scripts": {
   "start": "node index.js"
   },
+  "engines": {
+    "node": "18.18.0"
+  },
   "dependencies": {
     "axios": "^0.27.2",
     "better-sqlite3": "^7.5.1",
