@@ -1,4 +1,3 @@
-
 const Discord = require("discord.js");
 const db = require("quick.db");
 const owner = new db.table("Owner");
