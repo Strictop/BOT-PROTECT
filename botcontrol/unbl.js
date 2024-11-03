@@ -36,11 +36,6 @@ module.exports = {
             if (blacklistRole && member.roles.cache.has(blacklistRole.id)) {
                 await member.roles.remove(blacklistRole);
             }
-                        // Restaure le pseudo d'origine de l'utilisateur
-            const originalNickname = member.user.username;
-            await member.setNickname(originalNickname).catch(err => {
-                console.error("Erreur lors du changement de pseudo:", err);
-            }
 
             // Réinitialise les permissions dans chaque canal pour le rôle blacklist
             message.guild.channels.cache.forEach(async (channel) => {
