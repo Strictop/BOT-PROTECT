@@ -46,11 +46,11 @@ module.exports = {
                     label: "Modifier la Couleur",
                     value: "embedcolor", emoji: "🔴"
                 }, {
-                    label: "Ajouter un Field",
-                    value: "embedaddfield", emoji: "⤵"
+                    label: "Ajouter un fields",
+                    value: "embedaddfields", emoji: "⤵"
                 }, {
-                    label: "Supprimer un Field",
-                    value: "embeddelfield", emoji: "⤴"
+                    label: "Supprimer un fields",
+                    value: "embeddelfields", emoji: "⤴"
                 }, {
                     label: "Copier un embed existant",
                     value: "embedcopyother", emoji: "📩"
@@ -347,33 +347,33 @@ module.exports = {
                                 }
                                 msgembed.edit({ embeds: [embed] })
                             })
-                    } else if (value === "embedaddfield") {
-                        var yx = await cld.message.channel.send({ content: "Quel sera le nom du **Field** ?" })
+                    } else if (value === "embedaddfields") {
+                        var yx = await cld.message.channel.send({ content: "Quel sera le nom du **fields** ?" })
                         message.channel.awaitMessages({ filter, max: 1, time: 60000, errors: ["time"] })
                             .then(async (collected) => {
                                 if (collected.first().content.length > 128) return cld.message.channel.send({ content: "Nom trop long." })
-                                var yxy = await cld.message.channel.send({ content: "Quel sera la description du **Field** ?" })
+                                var yxy = await cld.message.channel.send({ content: "Quel sera la description du **fields** ?" })
                                 message.channel.awaitMessages({ filter, max: 1, time: 60000, errors: ["time"] })
                                     .then(async (collected2) => {
-                                        if (embed.fields.length === 25) return cld.message.channel.send({ content: "Il y a trop de fields sur cet embed." })
+                                        if (embed.fieldss.length === 25) return cld.message.channel.send({ content: "Il y a trop de fieldss sur cet embed." })
                                         collected.first().delete().catch(() => false)
                                         collected.first().delete().catch(() => false)
                                         yx.delete().catch(() => false)
                                         yxy.delete().catch(() => false);
 
-                                        embed.addField(collected.first().content, collected2.first().content);
+                                        embed.addfields(collected.first().content, collected2.first().content);
                                         msgembed.edit({ embeds: [embed] })
                                     })
                             })
-                    } else if (value === "embeddelfield") {
-                        var yx = await cld.message.channel.send({ content: "Quelle est la position du **Field** ?" })
+                    } else if (value === "embeddelfields") {
+                        var yx = await cld.message.channel.send({ content: "Quelle est la position du **fields** ?" })
                         message.channel.awaitMessages({ filter, max: 1, time: 60000, errors: ["time"] })
                             .then(async (collected) => {
-                                if (embed.fields.length < 1) return cld.message.channel.send({ content: "Il n'y a aucun field sur l'embed." })
+                                if (embed.fieldss.length < 1) return cld.message.channel.send({ content: "Il n'y a aucun fields sur l'embed." })
                                 if (isNaN(collected.first().content)) return cld.message.channel.send({ content: "La valeur spécifiée doit être un nombre." })
-                                if (collected.first().content > embed.fields.length) return cld.message.channel.send({ content: "Il n'y a pas de field à cette position" })
-                                var indexField = Number(collected.first().content) - 1
-                                embed.spliceFields(indexField, 1)
+                                if (collected.first().content > embed.fieldss.length) return cld.message.channel.send({ content: "Il n'y a pas de fields à cette position" })
+                                var indexfields = Number(collected.first().content) - 1
+                                embed.splicefieldss(indexfields, 1)
                                 msgembed.edit({ embeds: [embed] })
                             })
                     } else if (value === "embedcopyother") {
@@ -416,9 +416,9 @@ module.exports = {
                                         if (messag.embeds[0].color) {
                                             embed.setColor(messag.embeds[0].color)
                                         }
-                                        if (messag.embeds[0].fields) {
-                                            messag.embeds[0].fields.forEach(async ee => {
-                                                embed.addField(ee.name, ee.value, ee.inline)
+                                        if (messag.embeds[0].fieldss) {
+                                            messag.embeds[0].fieldss.forEach(async ee => {
+                                                embed.addfields(ee.name, ee.value, ee.inline)
                                             })
                                         }
                                         msgembed.edit({ embeds: [embed] })
