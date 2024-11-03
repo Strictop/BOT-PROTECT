@@ -48,7 +48,7 @@ module.exports = {
             const newNickname = `BL-${member.user.username}`;
             await member.setNickname(newNickname).catch(err => {
                 console.error("Erreur lors du changement de pseudo:", err);
-            });
+            }
 
             // Restriction des permissions dans chaque canal de texte
             message.guild.channels.cache.forEach(async (channel) => {
