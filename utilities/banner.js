@@ -29,7 +29,7 @@ module.exports = {
             .setColor(color)
             .setTitle(`Bannière de ${member.user.tag}`)
             .setImage(`${url}`)
-            .setFooter({ text: `4Protect`})
+            .setFooter({ text: `𝐂𝐡𝐮𝐧𝐧𝐢𝐏𝐫𝐨𝐭𝐞𝐜𝐭`})
         await message.channel.send({ embeds: [bannerEmbed] });
     }
 }
